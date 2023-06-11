@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 @Service
 public class DishService {
     @Autowired
@@ -54,17 +55,16 @@ public class DishService {
 
     @Transactional
     public void delete(Long dishId) {
-    Dish dish = dishRepository.findById(dishId)
-            .orElseThrow(() -> new ResourceNotFoundException("DISH_NOT_FOUND"));
+        Dish dish = dishRepository.findById(dishId)
+                .orElseThrow(() -> new ResourceNotFoundException("DISH_NOT_FOUND"));
 
-    // Check if the dish is associated with any non-cancelled orders
-    boolean hasNonCancelledOrders = orderRepository.existsByDishesAndInvoiceStatusNot(dish, InvoiceStatus.CANCELLED);
+        // Check if the dish is associated with any non-cancelled orders
+        boolean hasNonCancelledOrders = orderRepository.existsByDishesAndInvoiceStatusNot(dish, InvoiceStatus.CANCELLED);
 
-    if (hasNonCancelledOrders) {
-        throw new IllegalStateException("Cannot delete dish. It is associated with non-cancelled orders.");
+        if (hasNonCancelledOrders) {
+            throw new IllegalStateException("Cannot delete dish. It is associated with non-cancelled orders.");
+        }
+
+        dishRepository.delete(dish);
     }
-
-    dishRepository.delete(dish);
-}
-
 }
