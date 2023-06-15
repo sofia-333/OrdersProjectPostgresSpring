@@ -1,6 +1,8 @@
 package ge.ibsu.demo.services;
 
 import ge.ibsu.demo.dto.AddDish;
+import ge.ibsu.demo.dto.SearchDish;
+import ge.ibsu.demo.dto.request.Paging;
 import ge.ibsu.demo.entities.Dish;
 import ge.ibsu.demo.entities.enums.InvoiceStatus;
 import ge.ibsu.demo.repositories.DishRepository;
@@ -8,6 +10,10 @@ import ge.ibsu.demo.repositories.OrderRepository;
 import ge.ibsu.demo.utils.GeneralUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -66,5 +72,16 @@ public class DishService {
         }
 
         dishRepository.delete(dish);
+    }
+
+    public Slice<Dish> search(SearchDish searchDish, Paging paging) {
+        String name = null;
+        if (searchDish.getName() != null && !searchDish.getName().equals("")) {
+            name = "%" + searchDish.getName() + "%";
+        }
+        Pageable pageable = PageRequest.of(paging.getPage(), paging.getSize(), Sort.by("name").ascending());
+        System.out.println(name);
+        System.out.println(pageable);
+        return dishRepository.search(name, pageable);
     }
 }
