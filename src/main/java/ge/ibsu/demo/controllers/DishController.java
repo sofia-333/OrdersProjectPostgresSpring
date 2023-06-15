@@ -1,10 +1,13 @@
 package ge.ibsu.demo.controllers;
 
+import ge.ibsu.demo.dto.SearchDish;
+import ge.ibsu.demo.dto.request.RequestData;
 import ge.ibsu.demo.utils.GeneralUtil;
 import ge.ibsu.demo.dto.AddDish;
 import ge.ibsu.demo.entities.Dish;
 import ge.ibsu.demo.services.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +47,11 @@ public class DishController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = {"application/json"})
     public void edit(@PathVariable Long id) throws Exception {
         dishService.delete(id);
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.POST, produces = {"application/json"})
+    public Slice<Dish> search(@RequestBody RequestData<SearchDish> rd) {
+        return dishService.search(rd.getData(), rd.getPaging());
     }
 
 }
